@@ -14,6 +14,15 @@
 .studio-bar input[type=color]{width:34px;padding:2px}.studio-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
 .layer-list{display:grid;gap:5px}.layer-item{display:flex;align-items:center;gap:7px;background:#0f1725;border:1px solid var(--line);border-radius:7px;padding:7px;font-size:11px}.layer-item.active{border-color:var(--accent);background:#262441}.layer-item button{border:0;background:transparent;color:var(--muted);padding:2px}.layer-item .layer-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left}
 .element .handle{cursor:nwse-resize}.element.locked{outline-style:dashed}.element[contenteditable=true]{user-select:text;cursor:text}
+
+/* DU Mantra Notes Studio */
+.studio-brand{--dm-red:#b51f2a;--dm-yellow:#f4c542}
+.dm-section{background:linear-gradient(145deg,#231923,#171d2b)}
+.dm-section .tool{border-color:#50313a;background:#211f2b}
+.dm-section .tool:hover{border-color:#f4c542;background:#30232a}
+.dm-primary{background:#b51f2a!important;border-color:#b51f2a!important;color:#fff!important}
+.dm-accent{background:#f4c542!important;border-color:#f4c542!important;color:#201b14!important}
+.dm-note{font-size:10px;color:#aeb8c9;line-height:1.5;margin-top:9px}
 </style></head>
 <body>
 <div class="app">
@@ -23,7 +32,22 @@
 <div class="section"><p class="eyebrow">Create</p><div class="toolgrid">
 <button class="tool" data-add="text"><span>Ｔ</span>Text</button><button class="tool" data-add="heading"><span>H</span>Heading</button><button class="tool" data-add="rect"><span>▰</span>Rectangle</button><button class="tool" data-add="circle"><span>◯</span>Circle</button><button class="tool" data-add="line"><span>／</span>Line</button><button class="tool" id="addImage"><span>▧</span>Image</button><button class="tool" data-add="table"><span>▦</span>Table</button><button class="tool" data-add="sticker"><span>✦</span>Sticker</button></div><input id="imageFile" type="file" accept="image/*" class="hidden"></div>
 <div class="section"><p class="eyebrow">Notes templates</p><div class="toolgrid"><button class="tool" data-template="chapter">📘 Chapter notes</button><button class="tool" data-template="lecture">📝 Lecture notes</button><button class="tool" data-template="assignment">📄 Assignment</button><button class="tool" data-template="cover">✨ Cover page</button><button class="tool" data-template="summary">📌 Quick summary</button><button class="tool" data-template="comparison">▦ Comparison</button></div></div>
-<div class="section"><p class="eyebrow">Pages</p><div id="pages"></div><div class="page-actions"><button class="btn" id="addPage">＋ Page</button><button class="btn" id="duplicatePage">Duplicate</button></div><div class="page-actions"><button class="btn" id="movePageUp">↑ Move up</button><button class="btn" id="movePageDown">↓ Move down</button><button class="btn" id="deletePage">Delete</button></div></div>
+
+<div class="section dm-section"><p class="eyebrow">DU Mantra · Academic Studio</p>
+<div class="toolgrid">
+<button class="tool" data-academic="cover">🟥 Premium cover</button>
+<button class="tool" data-academic="contents">▤ Contents page</button>
+<button class="tool" data-academic="unit">📚 Unit opener</button>
+<button class="tool" data-academic="concept">✦ Concept page</button>
+<button class="tool" data-academic="comparison">▦ Compare topics</button>
+<button class="tool" data-academic="numerical">∑ Worked example</button>
+<button class="tool" data-academic="flow">↗ Flowchart page</button>
+<button class="tool" data-academic="revision">🎯 Revision sheet</button>
+<button class="tool" data-academic="practice">☑ Practice page</button>
+</div>
+<button class="btn dm-primary" id="buildNotesPack" style="width:100%;margin-top:10px">✦ Create 8-page notes pack</button>
+<p class="dm-note">Pre-designed academic layouts with DU Mantra red, mustard and white visual system. Replace every placeholder with your own content.</p>
+</div>\n<div class="section"><p class="eyebrow">Pages</p><div id="pages"></div><div class="page-actions"><button class="btn" id="addPage">＋ Page</button><button class="btn" id="duplicatePage">Duplicate</button></div><div class="page-actions"><button class="btn" id="movePageUp">↑ Move up</button><button class="btn" id="movePageDown">↓ Move down</button><button class="btn" id="deletePage">Delete</button></div></div>
 <div class="section"><p class="eyebrow">Layers</p><div id="layerList" class="layer-list"></div></div><div class="section"><p class="eyebrow">Quick actions</p><div class="toolgrid"><button class="tool" id="bringFront"><span>⇧</span>Bring forward</button><button class="tool" id="sendBack"><span>⇩</span>Send backward</button><button class="tool" id="deleteEl"><span>⌫</span>Delete</button><button class="tool" id="clearPage"><span>⟲</span>Clear page</button><button class="tool" id="pageNumber"><span>№</span>Page number</button></div></div>
 </aside>
 <main class="canvas-area"><div class="toolbar">
@@ -103,6 +127,41 @@ $('#insertEquation').onclick=()=>insertSpecial('equation');$('#insertCallout').o
 $('#importBtn').onclick=()=>$('#projectFile').click();
 $('#projectFile').onchange=e=>{const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{try{const d=JSON.parse(reader.result);if(!Array.isArray(d.pages)||!d.pages.length)throw Error();snapshot();pages=d.pages;current=Math.min(d.current||0,pages.length-1);$('#nameInput').value=d.name||'Imported project';$('#docName').textContent=$('#nameInput').value;selected=null;render();save();toast('Project imported')}catch(err){toast('Invalid project JSON file')}};reader.readAsText(file);e.target.value=''};
 
-load();render();
+
+/* Academic page system — editable native canvas elements */
+const DM={red:'#b51f2a',yellow:'#f4c542',ink:'#202536',muted:'#687386',line:'#e5e7eb',pale:'#fff7df',rose:'#fff0f0'};
+function dmText(x,y,w,h,fs,text,extra={}){return {id:uid(),type:'text',x,y,w,h,fontSize:fs,text,color:DM.ink,fontFamily:'Arial',...extra}}
+function dmShape(x,y,w,h,fill,border='0',radius='8px'){return {id:uid(),type:'shape',shape:'rect',x,y,w,h,fill,border,radius}}
+function dmTable(x,y,w,h,cells){return {id:uid(),type:'table',x,y,w,h,cells}}
+function dmPage(name,els,bg='#ffffff'){return {name,bg,w:794,h:1123,elements:els}}
+function dmHeader(title,sub){return [dmText(48,28,690,24,12,'DU MANTRA  /  B.COM. (HONS.)  /  STUDY NOTES',{bold:true,color:DM.muted}),dmShape(48,62,698,4,DM.red),dmText(48,83,700,52,29,title,{bold:true,color:DM.red}),dmText(50,138,690,28,13,sub,{color:DM.muted})]}
+function dmFooter(n){return [dmShape(48,1055,698,2,DM.line),dmText(48,1067,500,22,11,'DU MANTRA  •  EDITABLE ACADEMIC NOTES',{bold:true,color:DM.muted}),dmText(690,1065,55,24,13,String(n),{bold:true,align:'right',color:DM.red})]}
+function academicPage(kind){
+const base=dmHeader(({cover:'INCOME TAX LAW AND PRACTICE',contents:'CONTENTS / STUDY ROADMAP',unit:'UNIT 1  /  INTRODUCTION',concept:'CORE CONCEPTS',comparison:'COMPARISON & DIFFERENCES',numerical:'SOLVED PRACTICAL EXAMPLE',flow:'CONCEPT FLOWCHART',revision:'QUICK REVISION',practice:'PRACTICE & SELF-CHECK'})[kind]||'STUDY NOTES',
+({cover:'B.Com. (Hons.)  •  Semester V  •  DSC–5.1',contents:'A structured guide to the topics covered in this document',unit:'Official syllabus coverage  •  Learning objectives  •  Key topics',concept:'Understand the meaning, features, application and exam relevance',comparison:'Compare on a common basis; avoid vague one-line differences',numerical:'Formula  →  Substitution  →  Working  →  Final answer',flow:'A visual sequence to connect the important ideas',revision:'Key terms, formulas and exam-focused memory cues',practice:'Test understanding before moving to the next topic'})[kind]);
+let e=[...base];
+if(kind==='cover'){
+e.push(dmShape(48,225,698,590,DM.pale,'1px solid #efd37a','14px'),dmText(78,290,630,38,15,'DU MANTRA  •  COMMERCE STUDY SERIES',{bold:true,color:DM.red,align:'center'}),dmText(80,380,625,150,44,'INCOME TAX LAW\nAND PRACTICE',{bold:true,color:DM.red,align:'center'}),dmShape(170,560,450,5,DM.red),dmText(110,605,570,80,23,'B.Com. (Hons.)  |  Semester V\nDSC–5.1',{bold:true,align:'center'}),dmText(120,735,550,45,15,'CONCEPTS   •   PRACTICALS   •   EXAM PREPARATION',{bold:true,align:'center',color:DM.muted}));
+}else if(kind==='contents'){
+e.push(dmText(55,210,670,40,20,'HOW TO USE THESE NOTES',{bold:true,color:DM.red}),dmShape(50,265,690,580,'#fffafa','1px solid #e8c5c8'),dmText(78,295,630,500,19,'01   Foundation and basic terminology\n\n02   Unit-wise syllabus notes\n\n03   Definitions and concept explanations\n\n04   Comparison tables and diagrams\n\n05   Step-by-step practical problems\n\n06   Important theory questions\n\n07   Revision sheets and self-checks',{bold:true}));
+}else if(kind==='unit'){
+e.push(dmShape(50,220,690,170,DM.red,'0','12px'),dmText(82,252,620,40,17,'UNIT 01',{bold:true,color:DM.yellow}),dmText(82,305,620,60,34,'INTRODUCTION',{bold:true,color:'#ffffff'}),dmText(55,435,660,35,21,'LEARNING OBJECTIVES',{bold:true,color:DM.red}),dmShape(50,485,690,220,DM.pale),dmText(75,510,640,175,18,'By the end of this unit, you should be able to:\n\n• Explain the important terms\n• Distinguish related concepts\n• Apply the rules to simple situations\n• Write structured examination answers'),dmText(55,755,660,35,21,'TOPIC CHECKLIST',{bold:true,color:DM.red}),dmText(70,810,650,145,17,'☐ Meaning and scope\n☐ Important definitions\n☐ Classification and key rules\n☐ Practical application',{});
+}else if(kind==='concept'){
+e.push(dmShape(50,220,690,135,DM.pale),dmText(75,245,640,30,15,'IN SIMPLE WORDS',{bold:true,color:DM.red}),dmText(75,285,640,55,20,'Write the concept in clear, beginner-friendly language.'),dmText(55,400,650,34,21,'DEFINITION',{bold:true,color:DM.red}),dmShape(50,450,690,125,'#fffafa','1px solid #e8c5c8'),dmText(75,475,640,75,18,'Insert the precise textbook / statutory definition here.'),dmText(55,625,650,34,21,'KEY FEATURES',{bold:true,color:DM.red}),dmText(75,680,640,150,17,'1. First important feature\n2. Second important feature\n3. Third important feature\n4. Fourth important feature'),dmShape(50,875,690,105,DM.pale),dmText(70,900,650,60,16,'EXAM TIP  •  Add a short exam-ready answer or memory cue here.',{bold:true,color:DM.red}));
+}else if(kind==='comparison'){
+e.push(dmText(55,215,660,38,19,'COMPARE ON THE SAME BASIS',{bold:true,color:DM.red}),dmTable(50,280,690,500,[['BASIS','CONCEPT A','CONCEPT B'],['Meaning','',''],['Nature','',''],['Main features','',''],['Application','',''],['Example','','']]),dmShape(50,835,690,125,DM.pale),dmText(72,860,650,75,17,'REMEMBER  •  Explain each difference in complete sentences. Add examples only when relevant.',{bold:true}));
+}else if(kind==='numerical'){
+e.push(dmShape(50,215,690,95,DM.pale),dmText(72,238,650,50,18,'QUESTION  •  Write the complete problem statement here.'),dmText(55,355,650,35,21,'SOLUTION',{bold:true,color:DM.red}),dmTable(50,415,690,390,[['PARTICULARS','AMOUNT (₹)'],['Step 1','',''],['Step 2','',''],['Step 3','',''],['Step 4','',''],['Final answer','','']]),dmShape(50,850,690,115,DM.rose,'1px solid #e8c5c8'),dmText(72,875,650,70,17,'WORKING NOTE  •  State the formula, assumptions and applicable rule clearly.',{bold:true,color:DM.red}));
+}else if(kind==='flow'){
+e.push(dmText(55,220,660,40,20,'FOLLOW THE SEQUENCE',{bold:true,color:DM.red}),dmShape(70,320,650,105,DM.pale,'1px solid #e6cf85'),dmText(95,350,600,45,22,'STEP 1  →  Starting point',{bold:true,align:'center'}),dmText(365,435,90,45,28,'↓',{bold:true,color:DM.red,align:'center'}),dmShape(70,485,650,105,'#fffafa','1px solid #e8c5c8'),dmText(95,515,600,45,22,'STEP 2  →  Main rule',{bold:true,align:'center'}),dmText(365,600,90,45,28,'↓',{bold:true,color:DM.red,align:'center'}),dmShape(70,650,650,105,DM.pale,'1px solid #e6cf85'),dmText(95,680,600,45,22,'STEP 3  →  Result / conclusion',{bold:true,align:'center'}),dmText(55,830,660,100,16,'Add arrows, labels and explanatory notes to complete the process.',{color:DM.muted}));
+}else if(kind==='revision'){
+e.push(dmShape(50,215,690,150,DM.red,'0','12px'),dmText(75,240,640,35,16,'REMEMBER THESE',{bold:true,color:DM.yellow}),dmText(75,285,640,55,23,'Key formula / central idea goes here',{bold:true,color:'#ffffff'}),dmText(55,415,650,35,21,'KEY TERMS',{bold:true,color:DM.red}),dmText(75,470,640,155,18,'• Term 1 — short meaning\n• Term 2 — short meaning\n• Term 3 — short meaning\n• Term 4 — short meaning'),dmText(55,675,650,35,21,'LAST-MINUTE CHECK',{bold:true,color:DM.red}),dmShape(50,730,690,220,DM.pale),dmText(75,755,640,170,18,'☐ Definitions revised\n☐ Important differences revised\n☐ Formulas practised\n☐ Examples solved\n☐ Previous questions attempted'));
+}else if(kind==='practice'){
+e.push(dmText(55,215,660,38,20,'TEST YOUR UNDERSTANDING',{bold:true,color:DM.red}),dmText(65,285,660,560,18,'1. Define the main concept.\n\nAnswer: __________________________________________\n\n2. Explain any four features.\n\nAnswer: __________________________________________\n\n3. Distinguish between the two concepts.\n\nAnswer: __________________________________________\n\n4. Solve the practical problem.\n\nWorking: _________________________________________\n\n5. Write a short note on the topic.\n\nAnswer: __________________________________________'),dmShape(50,900,690,80,DM.pale),dmText(70,922,650,38,16,'SELF-RATING  •  Confident  /  Need revision  /  Practise again',{bold:true}));
+}
+e.push(...dmFooter(pages.length+1));snapshot();pages.push(dmPage(({cover:'Cover',contents:'Contents',unit:'Unit 1',concept:'Concept page',comparison:'Comparison',numerical:'Worked example',flow:'Flowchart',revision:'Revision',practice:'Practice'})[kind],e));current=pages.length-1;selected=null;$('#nameInput').value=$('#nameInput').value||'DU Mantra Study Notes';$('#docName').textContent=$('#nameInput').value;render();scheduleSave();toast('Academic layout added — all elements are editable')}
+document.querySelectorAll('[data-academic]').forEach(b=>b.onclick=()=>academicPage(b.dataset.academic));
+$('#buildNotesPack').onclick=()=>{if(pages.length>1&&!confirm('Add an 8-page notes pack after your existing pages?'))return;['cover','contents','unit','concept','comparison','numerical','revision','practice'].forEach(academicPage);toast('8-page DU Mantra pack created')};
+\nload();render();
 })();
 </script></body></html>
