@@ -132,3 +132,8 @@ test('chart data and title can be edited in the inspector', () => {
   assert.ok(scripts[0].includes("valuesInput.value=(o.values||[]).join(', ')"));
   assert.ok(scripts[0].includes('x.values=[...values]'));
 });
+
+
+test('advanced typography controls and rendering styles are available', () => {
+  for (const feature of ["field('Line height','lineHeight'", "field('Letter spacing (px)','letterSpacing'", "field('Text padding (px)','padding'", "field('Shadow colour','shadowColor'", "field('Outline colour','textStrokeColor'", "lineHeight:o.lineHeight||1.25", "textShadow:o.textShadow?"]) assert.ok(scripts[0].includes(feature), 'missing typography feature: ' + feature);
+});
