@@ -48,3 +48,20 @@ test('advanced selection and alignment controls are present', () => {
   for (const id of ['alignPageH','alignPageV','lockSelected']) assert.match(html, new RegExp('id="' + id + '"'));
   for (const feature of ['alignToPage','checkpointed=false','textArea.style.minHeight','Math.round((v.x+dx)/4)*4']) assert.ok(scripts[0].includes(feature), 'missing ' + feature);
 });
+
+test('selection clicks preserve single selection and support shift toggling', () => {
+  assert.ok(scripts[0].includes("else if(!selected.includes(o.id)){selected=[o.id];render()}"));
+  assert.ok(scripts[0].includes("if(e.shiftKey){selected=selected.includes(o.id)?selected.filter(x=>x!==o.id):[...selected,o.id];render()}"));
+});
+
+test('table cell edits create an undo checkpoint', () => {
+  assert.ok(scripts[0].includes("td.addEventListener('focus',()=>{if(!cellCheckpointed){checkpoint();cellCheckpointed=true}}"));
+  assert.ok(scripts[0].includes("o.rows[ri][Array.from(tr.children).indexOf(td)]=td.textContent"));
+});
+
+test('SVG export serializes supported object types rather than text only', () => {
+  for (const feature of ['function exportSvg','<ellipse','<polygon','<line','<path','<image','<text','<tspan','o.type===\'table\'','o.type===\'chart\'']) {
+    assert.ok(scripts[0].includes(feature), 'missing SVG export support: ' + feature);
+  }
+  assert.ok(scripts[0].includes("else if(choice==='3')exportSvg()"));
+});
