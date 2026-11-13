@@ -65,3 +65,8 @@ test('SVG export serializes supported object types rather than text only', () =>
   }
   assert.ok(scripts[0].includes("else if(choice==='3')exportSvg()"));
 });
+
+test('multi-selection grouping controls are wired with undo checkpoints', () => {
+  for (const id of ['groupSelected','ungroupSelected']) assert.match(html, new RegExp('id="' + id + '"'));
+  for (const feature of ['function groupSelected','function ungroupSelected','o.groupId=groupId','delete o.groupId','checkpoint();']) assert.ok(scripts[0].includes(feature), 'missing grouping behaviour: ' + feature);
+});
