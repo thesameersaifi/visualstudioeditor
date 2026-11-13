@@ -31,5 +31,5 @@ test('project persistence and import/export paths exist', () => {
 });
 
 test('no accidental escaped line-break tokens remain in executable code', () => {
-  assert.doesNotMatch(scripts[0], /\\\\n(?:load|function|else)\\b/);
+  assert.doesNotMatch(scripts[0], /\\n(?:load|function|else)\\b/);
 });
