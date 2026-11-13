@@ -116,3 +116,12 @@ test('layers can be reordered by drag and accessible move controls', () => {
   assert.ok(scripts[0].includes("up.textContent='↑'"));
   assert.ok(scripts[0].includes("down.textContent='↓'"));
 });
+
+
+test('selected objects support proportional group resize and rotation handles', () => {
+  assert.ok(scripts[0].includes('function resizeStart(e,o)'));
+  assert.ok(scripts[0].includes('const targets=pg().objects.filter(x=>selected.includes(x.id)&&!x.locked)'));
+  assert.ok(scripts[0].includes('function rotateStart(e,o)'));
+  assert.ok(scripts[0].includes("rotate.className='rotate-handle'"));
+  assert.ok(scripts[0].includes('x.rotation=v.rotation+delta'));
+});
