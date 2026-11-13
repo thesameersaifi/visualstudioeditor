@@ -87,3 +87,9 @@ test('multi-object alignment and distribution controls are wired', () => {
   assert.ok(scripts[0].includes('function alignSelection(mode)'));
   assert.ok(scripts[0].includes('function distributeSelection(axis)'));
 });
+
+test('duplicating a group creates a separate linked group', () => {
+  assert.ok(scripts[0].includes('const originals=pg().objects.filter(o=>selected.includes(o.id)),groupMap=new Map()'));
+  assert.ok(scripts[0].includes('if(!groupMap.has(o.groupId))groupMap.set(o.groupId,uid())'));
+  assert.ok(scripts[0].includes('c.groupId=groupMap.get(o.groupId)'));
+});
