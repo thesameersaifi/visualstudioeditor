@@ -143,3 +143,12 @@ test('text shadow and outline can be enabled from inspector', () => {
   assert.ok(scripts[0].includes("toggle('Text shadow','textShadow')"));
   assert.ok(scripts[0].includes("toggle('Text outline','textStroke')"));
 });
+
+
+test('charts support bar, line and pie visual styles', () => {
+  assert.ok(scripts[0].includes("kind==='pie'"));
+  assert.ok(scripts[0].includes("kind==='line'"));
+  assert.ok(scripts[0].includes("['bar','Bar chart']"));
+  assert.ok(scripts[0].includes("['line','Line chart']"));
+  assert.ok(scripts[0].includes("['pie','Pie chart']"));
+});
