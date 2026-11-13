@@ -164,6 +164,6 @@ e.push(dmText(55,215,660,38,20,'TEST YOUR UNDERSTANDING',{bold:true,color:DM.red
 e.push(...dmFooter(pages.length+1));snapshot();pages.push(dmPage(({cover:'Cover',contents:'Contents',unit:'Unit 1',concept:'Concept page',comparison:'Comparison',numerical:'Worked example',flow:'Flowchart',revision:'Revision',practice:'Practice'})[kind],e));current=pages.length-1;selected=null;$('#nameInput').value=$('#nameInput').value||'DU Mantra Study Notes';$('#docName').textContent=$('#nameInput').value;render();scheduleSave();toast('Academic layout added — all elements are editable')}
 document.querySelectorAll('[data-academic]').forEach(b=>b.onclick=()=>academicPage(b.dataset.academic));
 $('#buildNotesPack').onclick=()=>{if(pages.length>1&&!confirm('Add an 8-page notes pack after your existing pages?'))return;['cover','contents','unit','concept','comparison','numerical','revision','practice'].forEach(academicPage);toast('8-page DU Mantra pack created')};
-\nload();render();
+load();render();
 })();
 </script></body></html>
