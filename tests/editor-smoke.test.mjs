@@ -42,3 +42,9 @@ test('keyboard editing and smart layout are present', () => {
     assert.ok(html.includes(feature), 'missing ' + feature);
   }
 });
+
+
+test('advanced selection and alignment controls are present', () => {
+  for (const id of ['alignPageH','alignPageV','lockSelected']) assert.match(html, new RegExp('id="' + id + '"'));
+  for (const feature of ['alignToPage','checkpointed=false','textArea.style.minHeight','Math.round((v.x+dx)/4)*4']) assert.ok(scripts[0].includes(feature), 'missing ' + feature);
+});
