@@ -70,3 +70,19 @@ test('multi-selection grouping controls are wired with undo checkpoints', () => 
   for (const id of ['groupSelected','ungroupSelected']) assert.match(html, new RegExp('id="' + id + '"'));
   for (const feature of ['function groupSelected','function ungroupSelected','o.groupId=groupId','delete o.groupId','checkpoint();']) assert.ok(scripts[0].includes(feature), 'missing grouping behaviour: ' + feature);
 });
+
+
+test('grouped objects select and move as a unit', () => {
+  assert.ok(scripts[0].includes('function selectObject(o,shift=false)'));
+  assert.ok(scripts[0].includes('o.groupId?pg().objects.filter'));
+  assert.ok(scripts[0].includes('function dragStart(e,o)'));
+  assert.ok(scripts[0].includes('orig.forEach(v=>'));
+});
+
+test('multi-object alignment and distribution controls are wired', () => {
+  for (const id of ['alignLeftEdges','alignCenterX','alignRightEdges','alignTopEdges','alignCenterY','alignBottomEdges','distributeH','distributeV']) {
+    assert.match(html, new RegExp('id="' + id + '"'));
+  }
+  assert.ok(scripts[0].includes('function alignSelection(mode)'));
+  assert.ok(scripts[0].includes('function distributeSelection(axis)'));
+});
