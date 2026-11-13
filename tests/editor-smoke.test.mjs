@@ -125,3 +125,10 @@ test('selected objects support proportional group resize and rotation handles', 
   assert.ok(scripts[0].includes("rotate.className='rotate-handle'"));
   assert.ok(scripts[0].includes('x.rotation=v.rotation+delta'));
 });
+
+
+test('chart data and title can be edited in the inspector', () => {
+  assert.ok(scripts[0].includes("valuesLabel.textContent='Chart values · comma separated'"));
+  assert.ok(scripts[0].includes("valuesInput.value=(o.values||[]).join(', ')"));
+  assert.ok(scripts[0].includes('x.values=[...values]'));
+});
