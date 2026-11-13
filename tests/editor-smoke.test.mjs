@@ -100,3 +100,10 @@ test('multi-selection inspector applies compatible edits to every selected objec
   assert.ok(scripts[0].includes('targets.forEach(target=>target.text=textArea.value)'));
   assert.ok(scripts[0].includes('edits apply to all compatible objects'));
 });
+
+test('image fit mode is editable and preserved in exports', () => {
+  assert.ok(scripts[0].includes("im.style.objectFit=o.fit||'cover'"));
+  assert.ok(scripts[0].includes("fitSelect.value=o.fit||'cover'"));
+  assert.ok(scripts[0].includes("o.fit==='contain'?'xMidYMid meet':'xMidYMid slice'"));
+  assert.ok(scripts[0].includes("object-fit:'+(o.fit||'cover')"));
+});
