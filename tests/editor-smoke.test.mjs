@@ -107,3 +107,12 @@ test('image fit mode is editable and preserved in exports', () => {
   assert.ok(scripts[0].includes("o.fit==='contain'?'xMidYMid meet':'xMidYMid slice'"));
   assert.ok(scripts[0].includes("object-fit:'+(o.fit||'cover')"));
 });
+
+
+test('layers can be reordered by drag and accessible move controls', () => {
+  assert.ok(scripts[0].includes('row.draggable=true'));
+  assert.ok(scripts[0].includes("addEventListener('drop'"));
+  assert.ok(scripts[0].includes('function moveLayer(id,direction)'));
+  assert.ok(scripts[0].includes("up.textContent='↑'"));
+  assert.ok(scripts[0].includes("down.textContent='↓'"));
+});
