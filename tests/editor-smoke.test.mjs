@@ -49,9 +49,10 @@ test('advanced selection and alignment controls are present', () => {
   for (const feature of ['alignToPage','checkpointed=false','textArea.style.minHeight','Math.round((v.x+dx)/4)*4']) assert.ok(scripts[0].includes(feature), 'missing ' + feature);
 });
 
-test('selection clicks preserve single selection and support shift toggling', () => {
-  assert.ok(scripts[0].includes("else if(!selected.includes(o.id)){selected=[o.id];render()}"));
-  assert.ok(scripts[0].includes("if(e.shiftKey){selected=selected.includes(o.id)?selected.filter(x=>x!==o.id):[...selected,o.id];render()}"));
+test('selection clicks preserve single selection and support grouped shift toggling', () => {
+  assert.ok(scripts[0].includes('function selectObject(o,shift=false)'));
+  assert.ok(scripts[0].includes('if(e.shiftKey)selectObject(o,true)'));
+  assert.ok(scripts[0].includes('else selected=members;render()'));
 });
 
 test('table cell edits create an undo checkpoint', () => {
