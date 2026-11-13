@@ -93,3 +93,10 @@ test('duplicating a group creates a separate linked group', () => {
   assert.ok(scripts[0].includes('if(!groupMap.has(o.groupId))groupMap.set(o.groupId,uid())'));
   assert.ok(scripts[0].includes('c.groupId=groupMap.get(o.groupId)'));
 });
+
+test('multi-selection inspector applies compatible edits to every selected object', () => {
+  assert.ok(scripts[0].includes('const items=pg().objects.filter(x=>selected.includes(x.id))'));
+  assert.ok(scripts[0].includes('targets.forEach(target=>target[key]='));
+  assert.ok(scripts[0].includes('targets.forEach(target=>target.text=textArea.value)'));
+  assert.ok(scripts[0].includes('edits apply to all compatible objects'));
+});
