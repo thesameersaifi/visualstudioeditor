@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 
 const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
-const scripts = [...html.matchAll(/<script\\b[^>]*>([\\s\\S]*?)<\\/script>/gi)].map(m => m[1]);
+const scripts = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)].map(m => m[1]);
 
 test('editor has one executable application script', () => {
   assert.equal(scripts.length, 1, 'expected one inline application script');
@@ -31,5 +31,5 @@ test('project persistence and import/export paths exist', () => {
 });
 
 test('no accidental escaped line-break tokens remain in executable code', () => {
-  assert.doesNotMatch(scripts[0], /\\n(?:load|function|else)\\b/);
+  assert.doesNotMatch(scripts[0], /\\n(?:load|function|else)\b/);
 });
