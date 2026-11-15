@@ -12,7 +12,7 @@ test('single application script parses', () => {
 });
 
 test('editor has unique DOM ids', () => {
-  const ids = [...html.matchAll(/(?:^|\\s)id="([^"]+)"/g)].map(m => m[1]);
+  const ids = [...html.matchAll(/(?:^|\s)id="([^"]+)"/g)].map(m => m[1]);
   assert.equal(new Set(ids).size, ids.length);
 });
 
