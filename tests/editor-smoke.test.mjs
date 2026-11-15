@@ -152,3 +152,15 @@ test('charts support bar, line and pie visual styles', () => {
   assert.ok(scripts[0].includes("['line','Line chart']"));
   assert.ok(scripts[0].includes("['pie','Pie chart']"));
 });
+
+test('image crop and adjustment controls are available in the inspector', () => {
+  for (const feature of ["range('Crop horizontal','cropX'", "range('Crop vertical','cropY'", "range('Crop zoom','cropZoom'", "range('Brightness','brightness'", "range('Contrast','contrast'", "range('Saturation','saturation'", "range('Grayscale','grayscale'", "range('Sepia','sepia'", "range('Blur','blur'", "Reset image adjustments", "function imageFilter(o)"]) {
+    assert.ok(scripts[0].includes(feature), 'missing image editing feature: ' + feature);
+  }
+});
+
+test('image crop and filters are preserved in canvas, SVG and print export', () => {
+  for (const feature of ["im.style.objectPosition=(o.cropX??50)+'% '+(o.cropY??50)+'%'", "im.style.transform='scale('+(o.cropZoom||1)+')'", "im.style.filter=imageFilter(o)", "style=\\"filter:'+imageFilter(o)+'\\"", "object-position:'+(o.cropX??50)+'% '+(o.cropY??50)+'%'"]) {
+    assert.ok(scripts[0].includes(feature), 'missing image export/render behaviour: ' + feature);
+  }
+});
